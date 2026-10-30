@@ -33,6 +33,14 @@ pipeline {
                 """
             }
         }
+        stage('Build Image') {
+            steps {
+                sh """
+                   docker buid -t catalogue:${appVersion} .
+                   docker images
+                """
+            }
+        }    
         stage('Deploy') {
             // input {
             //     message "Should we continue?"
