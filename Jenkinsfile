@@ -30,9 +30,22 @@ pipeline {
         }
         stage('Install Dependencies') {
             steps {
-                sh """
-                   npm install
-                """
+                scripts {
+                    sh """
+                        npm install
+                    """    
+
+                }
+            }
+        }
+          stage('Unit Test') {
+            steps {
+                scripts{
+                    sh """
+                      npm test
+                    """
+                }
+                      
             }
         }
         stage('Build Image') {
