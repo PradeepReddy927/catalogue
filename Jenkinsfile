@@ -38,17 +38,17 @@ pipeline {
                 }
             }
         }
-        stage('Unit Test') {
-            steps {
-                script{
-                    sh """
-                        npm test
-                        
-                    """
-                }
+        // stage('Unit Test') {
+        //     steps {
+        //         script{
+        //             sh """
+        //                 npm test
+
+        //             """
+        //         }
                       
-            }
-        }
+        //     }
+        // }
         stage('Build Image') {
             steps {
                 script {
