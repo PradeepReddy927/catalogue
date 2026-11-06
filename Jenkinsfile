@@ -1,3 +1,4 @@
+```groovy
 pipeline {
     // Pre build section
     agent {
@@ -17,25 +18,27 @@ pipeline {
         timeout(time: 10, unit: 'MINUTES')
         disableConcurrentBuilds()
     }    
+
     // This is build section
     stages {
         stage('Read Version') {
             steps {
                 script{
                    def packageJSON = readJSON file: 'package.json'
-                   appVersion = packageJSON.version
-                   echo "app version: ${appVersion}"
+                   env.appVersion = packageJSON.version 
+                   echo "app version: ${env.appVersion}"
                 }    
             }
         }
+
         stage('Install Dependencies') {
             steps {
-                sh '''
-                    set -eux
+                sh """
                     npm install
-                '''
+                """    
             }
         }
+
         // stage('Unit Test') {
         //     steps {
         //         script{
@@ -47,26 +50,27 @@ pipeline {
                       
         //     }
         // }
+
         stage('Build Image') {
             steps {
-                script{
+                script {
                     withAWS(region:'us-east-1',credentials:'aws-creds') {
                         sh """
-                            set -eux
                             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
-                            docker build -t ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion} .
+
+                            docker build -t ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${env.appVersion} .
+
                             docker images
-                            docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${appVersion}
+
+                            docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${env.appVersion}
                         """
     
                     }
                 }
                 
-
             }
         }    
         
-       
     }
     post {
         always {
@@ -84,4 +88,4 @@ pipeline {
         }
     }
 }
-
+```
