@@ -4,9 +4,9 @@ pipeline {
     agent {
         node {
             label 'AGENT-1'
-    
         }
     }
+
     environment {
         COURSE = "Jenkins"
         appVersion = ""
@@ -14,20 +14,24 @@ pipeline {
         PROJECT = "roboshop"
         COMPONENT = "catalogue"
     }
+
     options {
         timeout(time: 10, unit: 'MINUTES')
         disableConcurrentBuilds()
-    }    
+    }
 
     // This is build section
     stages {
         stage('Read Version') {
             steps {
-                script{
-                   def packageJSON = readJSON file: 'package.json'
-                   env.appVersion = packageJSON.version 
-                   echo "app version: ${env.appVersion}"
-                }    
+                script {
+                    def packageJSON = readJSON file: 'package.json'
+                    env.appVersion = packageJSON.version
+
+                    echo "Jenkins pipeline triggered successfully!"
+                    echo "Application version: ${env.appVersion}"
+                    echo "Component: ${COMPONENT}"
+                }
             }
         }
 
@@ -35,13 +39,13 @@ pipeline {
             steps {
                 sh """
                     npm install
-                """    
+                """
             }
         }
 
         stage('Unit Test') {
             steps {
-                script{
+                script {
                     sh """
                         npm test
                     """
@@ -52,7 +56,7 @@ pipeline {
         stage('Build Image') {
             steps {
                 script {
-                    withAWS(region:'us-east-1',credentials:'aws-creds') {
+                    withAWS(region: 'us-east-1', credentials: 'aws-creds') {
                         sh """
                             aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com
 
@@ -62,25 +66,26 @@ pipeline {
 
                             docker push ${ACC_ID}.dkr.ecr.us-east-1.amazonaws.com/${PROJECT}/${COMPONENT}:${env.appVersion}
                         """
-    
                     }
                 }
-                
             }
-        }    
-        
+        }
     }
+
     post {
         always {
             echo 'I will always say Hello!'
-            cleanWs() 
+            cleanWs()
         }
+
         success {
             echo 'I will run if success'
         }
+
         failure {
             echo 'I will run if failure'
         }
+
         aborted {
             echo 'Pipeline is aborted'
         }
