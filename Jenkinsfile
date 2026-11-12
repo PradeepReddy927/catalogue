@@ -1,4 +1,4 @@
-```groovy
+
 pipeline {
     // Pre build section
     agent {
@@ -91,4 +91,3 @@ pipeline {
         }
     }
 }
-```
