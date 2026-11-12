@@ -59,7 +59,7 @@ pipeline {
         //Here you Need to select scanner tool and send the analysis to server 
         stage('Sonar Scan') {
             environment {
-                def scannerHome = tool 'sonar-8.0'
+                def scannerHome = tool 'sonar-8.4'
 
             }
             steps {
